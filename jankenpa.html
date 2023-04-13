@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>猜拳遊戲</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+h1 {
+    text-align: center;
+}
+.choices {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 20px;
+}
+
+.choices button {
+    font-size: 20px;
+    margin: 0 10px;
+}
+
+.result {
+    text-align: center;
+}
+
+.result p {
+    font-size: 24px;
+    margin-bottom: 10px;
+}
+
+.result span {
+    font-weight: bold;
+}
+
+.record {
+    text-align: center;
+    margin-top: 20px;
+}
+
+.record p {
+    font-size: 20px;
+    margin-bottom: 10px;
+}
+
+.record span {
+    font-weight: bold;
+}
+
+
+
+
+    </style>
+</head>
+<body>
+    <h1>猜拳遊戲</h1>
+    <div class="choices">
+        <button id="scissors">剪刀</button>
+        <button id="rock">石頭</button>
+        <button id="paper">布</button>
+    </div>
+    <div class="result">
+        <p>電腦出拳: <span id="computer-choice"></span></p>
+        <p>結果: <span id="result"></span></p>
+    </div>
+
+    <div class="record">
+        <p>勝: <span id="win">0</span></p>
+        <p>敗: <span id="lose">0</span></p>
+        <p>平手: <span id="tie">0</span></p>
+    </div>
+
+    <div class="reset">
+        <button id="reset">重置</button>
+    </div>
+
+    <div class="win-rate">
+        <span id="win-rate"></span>
+    </div>
+
+
+    <script>
+       const choices = ['剪刀', '石頭', '布'];
+const computerChoice = document.getElementById('computer-choice');
+const result = document.getElementById('result');
+const winSpan = document.getElementById('win');
+const loseSpan = document.getElementById('lose');
+const tieSpan = document.getElementById('tie');
+const winRateSpan = document.getElementById('win-rate');
+
+let win = parseInt(localStorage.getItem('win'));
+let lose = parseInt(localStorage.getItem('lose'));
+let tie = parseInt(localStorage.getItem('tie'));
+
+if (!win && !lose && !tie) {
+    win = 0;
+    lose = 0;
+    tie = 0;
+}
+
+winSpan.textContent = win;
+loseSpan.textContent = lose;
+tieSpan.textContent = tie;
+
+function playRound(playerSelection, computerSelection) {
+    if (playerSelection === computerSelection) {
+        localStorage.setItem('tie', ++tie);
+        tieSpan.textContent = tie;
+        return '平手';
+    } else if (
+        (playerSelection === '剪刀' && computerSelection === '布') ||
+        (playerSelection === '石頭' && computerSelection === '剪刀') ||
+        (playerSelection === '布' && computerSelection === '石頭')
+    ) {
+        localStorage.setItem('win', ++win);
+        winSpan.textContent = win;
+        return '你贏了';
+    } else {
+        localStorage.setItem('lose', ++lose);
+        loseSpan.textContent = lose;
+        return '你輸了';
+    }
+}
+
+function computerPlay() {
+    const randomIndex = Math.floor(Math.random() * choices.length);
+    return choices[randomIndex];
+}
+
+function game(playerSelection) {
+    const computerSelection = computerPlay();
+    computerChoice.textContent = computerSelection;
+    result.textContent = playRound(playerSelection, computerSelection);
+
+    const total = win + lose;
+    const winRate = total === 0 ? 0 : win / total;
+    winRateSpan.textContent = `勝率：${(winRate * 100).toFixed(1)}%`;
+}
+
+window.onload = function() {
+    const scissorsBtn = document.getElementById('scissors');
+    scissorsBtn.addEventListener('click', () => {
+        game('剪刀');
+    });
+
+    const rockBtn = document.getElementById('rock');
+    rockBtn.addEventListener('click', () => {
+        game('石頭');
+    });
+
+    const paperBtn = document.getElementById('paper');
+    paperBtn.addEventListener('click', () => {
+        game('布');
+    });
+
+    const resetBtn = document.getElementById('reset');
+    resetBtn.addEventListener('click', () => {
+        localStorage.setItem('win', parseInt(0));
+        localStorage.setItem('lose', parseInt(0));
+        localStorage.setItem('tie', parseInt(0));
+        win = 0;
+        lose = 0;
+        tie = 0;
+        winSpan.textContent = 0;
+        loseSpan.textContent = 0;
+        tieSpan.textContent = 0;
+        winRateSpan.textContent = '';
+    });
+};
+
+    </script>
+
+    <script src="script.js"></script>
+
+</body>
+</html>
